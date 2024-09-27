@@ -1,8 +1,8 @@
 export class InputStream {
-  private position:number = 0;
-  private line:number = 1;
-  private column:number = 0;
-  private input:string;
+  private position:number = 0
+  private line:number = 1
+  private column:number = 0
+  private input:string
 
   constructor(rawInput:string) {
     this.input = rawInput
@@ -23,7 +23,7 @@ export class InputStream {
     return this.input.charAt(this.position)
   }
 
-  public eof():boolean {
+  public isAtEnd():boolean {
     return this.peek() === ''
   }
 
