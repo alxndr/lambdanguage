@@ -38,10 +38,15 @@ export class Parser { // recursive descent parser
   }
 
   private input:Tokenizer
+  public ast
 
   constructor(input:string) {
     this.input = new Tokenizer(input)
-    this.parseTopLevel()
+    this.ast = this.parseTopLevel()
+  }
+
+  private log(...msgs:string[]):void {
+    console.log(...msgs)
   }
 
   private parseTopLevel():SequenceToken {
@@ -57,7 +62,7 @@ export class Parser { // recursive descent parser
     }
   }
 
-  private parseAtom() {
+  private parseAtom():AnyToken {
     return this.maybeCall(() => {
       if (this.isPunctuation(Parser.CHAR_PAREN_OPEN)) {
         this.input.next()
@@ -84,10 +89,11 @@ export class Parser { // recursive descent parser
   }
 
   private parseBool():BooleanToken {
-    const bool = this.input.next()
+    const bool = this.input.next() as BooleanToken
+    this.log('parseBool...', JSON.stringify(bool))
     return {
       type: 'bool',
-      value: bool?.value == 'true',
+      value: bool?.value == true,
     }
   }
 
@@ -96,7 +102,7 @@ export class Parser { // recursive descent parser
     if (prog.length == 0)
       return Parser.VALUE_FALSE as BooleanToken // TODO
     if (prog.length == 1)
-      return prog[0]
+      return prog[0] // TODO is this a SequenceToken? or an AST?
     return {
       type: 'prog',
       prog,
@@ -123,7 +129,9 @@ export class Parser { // recursive descent parser
 
   private isKeyword(term:string|false=false) {
     const token = this.input.peek()
-    return token && token.type == 'kw' && (!term || token.value == term) && token
+    if (token && token.type == 'kw' && (!term || token.value == term))
+      return token
+    return false
   }
 
   private skipKeyword(kw:string) {
@@ -131,6 +139,13 @@ export class Parser { // recursive descent parser
       this.input.next()
     else
       this.input.croak(`Expecting keyword: "${kw}"`)
+  }
+
+  private skipOp(op:string) {
+    if (this.isOp(op))
+      this.input.next()
+    else
+      this.input.croak(`Expecting operator: "${op}"`)
   }
 
   private skipPunctuation(char:string) {
@@ -148,7 +163,7 @@ export class Parser { // recursive descent parser
     }
   }
 
-  private parseVarname() {
+  private parseVarname():string {
     const name = this.input.next()
     if (!name || name.type != 'var')
       this.input.croak('expecting variable name!')
@@ -172,7 +187,7 @@ export class Parser { // recursive descent parser
     }
   }
 
-  private unexpected() {
+  private unexpected():never {
     this.input.croak(`Unexpected token: ${JSON.stringify(this.input.peek())}`)
   }
 
@@ -197,21 +212,21 @@ export class Parser { // recursive descent parser
     return lhs
   }
 
-  private isPunctuation(char:string) {
+  private isPunctuation(char:string|false=false) {
     const token = this.input.peek()
     if (token && token.type == 'punc' && (!char || token.value == char))
       return token
     return false
   }
 
-  private isOp(op=false) {
+  private isOp(op:string|false=false) {
     const token = this.input.peek()
     if (token && token.type == 'operator' && (!op || token.value == op))
       return token
     return false
   }
 
-  private delimited(startChar:string, endChar:string, separatorChar:string, parser:Function) {
+  private delimited(startChar:string, endChar:string, separatorChar:string, parser:Function):AST[] {
     const a:AST = []
     let first = true
     this.skipPunctuation(startChar)

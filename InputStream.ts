@@ -9,7 +9,9 @@ export class InputStream {
   }
 
   public next():string {
-    const char = this.input.charAt(this.position)
+    if (this.isAtEnd())
+      this.croak('next: already at end')
+    const char = this.input.charAt(this.position++)
     if (char === '\n') {
       this.line++
       this.column = 0

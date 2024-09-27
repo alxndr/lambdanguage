@@ -1,0 +1,22 @@
+{
+  "name": "lambdanguage",
+  "version": "0.1.0-alpha",
+  "description": "Implementing a programming language, using TypeScript and some ECMAScript 2022 features.",
+  "scripts": {
+    "test": "node --import tsx --experimental-test-coverage --test-coverage-exclude test.ts test.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alxndr/lambdanguage.git"
+  },
+  "author": "@alxndr",
+  "license": "UNLICENSED",
+  "private": true,
+  "bugs": {
+    "url": "https://github.com/alxndr/lambdanguage/issues"
+  },
+  "homepage": "https://github.com/alxndr/lambdanguage#readme",
+  "devDependencies": {
+    "tsx": "^4.19.1"
+  }
+}
