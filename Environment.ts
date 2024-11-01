@@ -6,7 +6,7 @@ import type {
 
 export class Environment {
   private vars:Record<VarName,any>
-  private parent:Environment
+  private parent:Environment|null
 
   constructor(parent:Environment|null=null) {
     this.vars = Object.create(parent ?? null)
@@ -18,7 +18,7 @@ export class Environment {
   }
 
   private lookup(name:VarName) { // find the scope where the variable with the given name is defined
-    let scope:Environment = this
+    let scope:Environment|null = this
     while (scope) {
       if (Object.prototype.hasOwnProperty.call(scope.vars, name))
         return scope

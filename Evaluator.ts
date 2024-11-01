@@ -74,7 +74,7 @@ export class Evaluator {
 
       case 'call':
         log('exp is a call...', exp.args)
-        this.evaluate(exp.func).apply(null, ...exp.args.map(arg => this.evaluate(arg)))
+        return this.evaluate(exp.func).apply(null, exp.args.map(arg => this.evaluate(arg)))
 
       default:
         throw new Error(`Evaluator: Unexpected evaluation target: ${JSON.stringify(exp.type)}`)
