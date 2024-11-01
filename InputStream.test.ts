@@ -2,8 +2,6 @@ import {describe, it} from 'node:test'
 import assert from 'node:assert'
 
 import {InputStream} from './InputStream'
-import {Tokenizer} from './Tokenizer'
-import {Parser} from './Parser'
 
 describe('InputStream', () => {
   it('is a constructor function', () => {
@@ -61,42 +59,6 @@ describe('InputStream', () => {
     it('throws', () => {
       const inputStream = new InputStream('')
       assert.throws(() => inputStream.croak('message'), /message \(1:0\)/)
-    })
-  })
-})
-
-describe('Tokenizer', () => {
-  it('is a constructor function', () => {
-    assert.strictEqual(typeof Tokenizer, 'function')
-    const tokenizer = new Tokenizer('')
-    assert.strictEqual(typeof tokenizer, 'object')
-    assert.strictEqual(tokenizer instanceof Tokenizer, true)
-  })
-  describe('with zero-length string', () => {
-    it('is at end', () => {
-      const tokenizer = new Tokenizer('')
-      assert.strictEqual(tokenizer.isAtEnd(), true)
-    })
-  })
-})
-
-describe('Parser', () => {
-  it('is a constructor function', () => {
-    assert.strictEqual(typeof Parser, 'function')
-    const parser = new Parser('')
-    assert.strictEqual(typeof parser, 'object')
-    assert.strictEqual(parser instanceof Parser, true)
-  })
-  describe('with empty input', () => {
-    it('returns AST with single empty prog token', () => {
-      const {ast} = new Parser('')
-      assert.deepEqual(ast, {type: 'prog', prog: []})
-    })
-  })
-  describe.skip('with numerical input', () => {
-    it('returns AST with single number token', () => {
-      const {ast} = new Parser('1337')
-      assert.deepEqual(ast, {type: 'prog', prog: []})
     })
   })
 })

@@ -3,7 +3,8 @@
   "version": "0.1.0-alpha",
   "description": "Implementing a programming language, using TypeScript and some ECMAScript 2022 features.",
   "scripts": {
-    "test": "node --import tsx --experimental-test-coverage --test-coverage-exclude test.ts test.ts"
+    "check": "tsc --esModuleInterop ./*.ts && echo Check completed",
+    "test": "node --import tsx *.test.ts"
   },
   "repository": {
     "type": "git",

@@ -10,7 +10,7 @@ export class InputStream {
 
   public next():string {
     if (this.isAtEnd())
-      this.croak('next: already at end')
+      this.croak('InputStream#next: already at end')
     const char = this.input.charAt(this.position++)
     if (char === '\n') {
       this.line++

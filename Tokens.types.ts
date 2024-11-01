@@ -1,25 +1,61 @@
-export type AST = any // TODO
+export type VarName = string
 
-type Operator = any // TODO
+export type Keyword =
+   'if'
+ | 'else'
+ | 'then'
+ | 'true'
+ | 'false'
+ | 'lambda'
+ | 'λ'
+
+export type Operator =
+    '='
+  | '||'
+  | '&&'
+  | '<'
+  | '>'
+  | '<='
+  | '>='
+  | '=='
+  | '!='
+  | '+'
+  | '-'
+  | '*'
+  | '/'
+  | '%'
+
+export type ASTNode =
+    AssignmentToken
+  | BinaryToken
+  | BlockVariableToken
+  | BooleanToken
+  | ConditionalToken
+  | FunctionCallToken
+  | FunctionToken
+  | IdentifierToken
+  | NumberToken
+  | SequenceToken
+  | StringToken
 
 export type AssignmentToken = {
   type:'assign',
   operator:'=',
-  left:AST,
-  right:AST,
+  left:ASTNode,
+  right:ASTNode,
 }
 
 export type BinaryToken = {
   type:'binary',
   operator:Operator,
-  left:AST,
-  right:AST,
+  left:ASTNode,
+  right:ASTNode,
 }
 
 export type BlockVariableToken = {
   type:'let',
-  vars:AST[],
-  body:AST,
+  vars:VarName[],
+  body:ASTNode,
 }
 
 export type BooleanToken = {
@@ -29,26 +65,26 @@ export type BooleanToken = {
 
 export type ConditionalToken = {
   type:'if',
-  cond:AST,
-  then:AST,
-  else?:AST,
+  cond:ASTNode,
+  then:ASTNode,
+  else?:ASTNode,
 }
 
 export type FunctionCallToken = {
   type:'call',
-  func:AST,
-  args:AST[],
+  func:IdentifierToken,
+  args:ASTNode[],
 }
 
 export type FunctionToken = {
   type:'lambda',
-  vars:string[],
-  body:AST,
+  vars:VarName[],
+  body:ASTNode,
 }
 
 export type KeywordToken = {
   type:'kw',
-  value:any, // TODO wtf
+  value:string,
 }
 
 export type IdentifierToken = {
@@ -68,31 +104,15 @@ export type OperatorToken = {
 
 export type PunctuationToken = {
   type:'punc',
-  value:any, // TODO
+  value:string,
 }
 
 export type SequenceToken = {
   type:'prog',
-  prog:AST[],
+  prog:ASTNode[],
 }
 
 export type StringToken = {
   type:'str',
   value:string,
 }
-
-export type AnyToken =
-  AssignmentToken
-| BinaryToken
-// | BlockVariableToken
-| BooleanToken
-| ConditionalToken
-| FunctionToken
-| FunctionCallToken
-| KeywordToken
-| IdentifierToken
-| NumberToken
-| OperatorToken
-| PunctuationToken
-| SequenceToken
-| StringToken
