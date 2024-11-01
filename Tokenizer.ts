@@ -81,7 +81,7 @@ export class Tokenizer {
 
   public isAtEnd():boolean {
     const p = this.peek()
-    console.log(`\tTokenizer#isAtEnd? ${p === null}:`, p)
+    // console.log(`\tTokenizer#isAtEnd? ${p === null}:`, p)
     return p === null
   }
 
@@ -90,7 +90,7 @@ export class Tokenizer {
   }
 
   private log(...msgs:string[]):void {
-    console.log(...msgs)
+    // console.log(...msgs)
   }
 
   private isDigit(char:string):boolean {
@@ -100,7 +100,7 @@ export class Tokenizer {
   }
 
   private isIdentifier(char:string):boolean {
-    console.log('\tTokenizer#isIdentifier??', char)
+    // console.log('\tTokenizer#isIdentifier??', char)
     if (char.length > 1)
       throw new Error('Tokenizer#isIdentifier should only be passed one char at a time')
     return Tokenizer.REGEX_IDENTIFIER_CHAR.test(char)
@@ -129,40 +129,40 @@ export class Tokenizer {
   }
 
   private readNext():AnyToken|null {
-    const log = (...msgs) => console.log('\tTokenizer#readNext', ...msgs)
-    log('read past spaces...')
+    // const log = (...msgs) => console.log('\tTokenizer#readNext', ...msgs)
+    // log('read past spaces...')
     this.readWhile(this.isSpace)
     if (this.input.isAtEnd()) {
-      log('we are at the end!!!')
+      // log('we are at the end!!!')
       return null
     }
     const char = this.input.peek()
-    log('peeked:', {char})
+    // log('peeked:', {char})
     if (char === '#') {
       this.skipComment()
       return this.readNext()
     }
     if (char === '"') {
-      log('saw a quote, we got a string')
+      // log('saw a quote, we got a string')
       return this.readString()
     }
     if (this.isDigit(char)) {
-      log('saw a digit, we got a number')
+      // log('saw a digit, we got a number')
       return this.readNumber()
     }
     if (Tokenizer.REGEX_IDENTIFIER_START.test(char)) {
-      log('saw an identifier start char...')
+      // log('saw an identifier start char...')
       return this.readIdentifier()
     }
     if (Tokenizer.REGEX_PUNCTUATION.test(char)) {
-      log('saw a punctuation...')
+      // log('saw a punctuation...')
       return {type: 'punc', value: this.input.next()}
     }
     if (Tokenizer.REGEX_OPERATOR.test(char)) {
-      log('saw an operator char')
+      // log('saw an operator char')
       return {type: 'operator', value: this.readWhile(this.isOperator) as Operator}
     }
-    log('uh oh dunno what this is', {char})
+    // log('uh oh dunno what this is', {char})
     this.input.croak(`Tokenizer: Can't handle character: ${char}`)
   }
 

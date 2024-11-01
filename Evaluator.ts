@@ -1,3 +1,5 @@
+import {makeLogger} from './logger'
+
 import type {Environment} from './Environment'
 import type {
   ASTNode,
@@ -38,6 +40,7 @@ export class Evaluator {
   }
 
   public evaluate(exp:ASTNode) {
+    const log = makeLogger('Evaluator#evaluate')
     switch (exp.type) { // TODO more typescript-y way to do this? type guards?
       case 'num':
       case 'str':
@@ -70,6 +73,7 @@ export class Evaluator {
         return exp.prog.reduce((_, elem) => this.evaluate(elem), null)
 
       case 'call':
+        log('exp is a call...', exp.args)
         this.evaluate(exp.func).apply(null, ...exp.args.map(arg => this.evaluate(arg)))
 
       default:

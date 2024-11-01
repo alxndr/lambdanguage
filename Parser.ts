@@ -1,3 +1,5 @@
+import {makeLogger} from './logger'
+
 import {
   Tokenizer,
   KEYWORD_IF,
@@ -48,18 +50,17 @@ export class Parser { // recursive descent parser
 
   constructor(input:string) {
     this.input = new Tokenizer(input)
-    console.log('Tokenizer#constructor...', {input}, this.input)
     this.ast = this.parseTopLevel()
   }
 
   private parseTopLevel():SequenceToken {
-    console.log('Parser#parseTopLevel...')
+    const log = makeLogger('Parser#parseTopLevel')
     const prog:ASTNode[] = []
     while (!this.input.isAtEnd()) {
       prog.push(this.parseExpression())
-      console.log('Parser#parseTopLevel now has prog:', prog)
+      log('prog:', prog)
       if (!this.input.isAtEnd()) {
-        console.log('tryna skip semicolon....', CHAR_SEPARATOR_EXPRESSION)
+        log('tryna skip:', CHAR_SEPARATOR_EXPRESSION)
         this.skipPunctuation(CHAR_SEPARATOR_EXPRESSION)
       }
     }
@@ -70,7 +71,7 @@ export class Parser { // recursive descent parser
   }
 
   private parseAtom():AssignmentToken|BinaryToken|BooleanToken|ConditionalToken|FunctionCallToken|SequenceToken {
-    const log = (...msgs) => console.log('#parseAtom', ...msgs)
+    const log = makeLogger('Parser#parseAtom')
     return this.maybeCall(() => {
       log('starting')
       if (this.isPunctuation(CHAR_PAREN_OPEN)) {
@@ -116,7 +117,6 @@ export class Parser { // recursive descent parser
 
   private parseBool():BooleanToken {
     const bool = this.input.next() as BooleanToken
-    // this.log('parseBool...', JSON.stringify(bool))
     return {
       type: 'bool',
       value: bool?.value == true,
@@ -124,14 +124,15 @@ export class Parser { // recursive descent parser
   }
 
   private parseProg():AssignmentToken|BinaryToken|BooleanToken|FunctionCallToken|SequenceToken {
-    console.log('#parseProg...', CHAR_BRACE_OPEN, CHAR_SEPARATOR_EXPRESSION, CHAR_BRACE_CLOSE)
+    const log = makeLogger('Parser#parseProg')
+    log(CHAR_BRACE_OPEN, CHAR_SEPARATOR_EXPRESSION, CHAR_BRACE_CLOSE)
     const prog = this.delimited(
       CHAR_BRACE_OPEN,
       CHAR_BRACE_CLOSE,
       CHAR_SEPARATOR_EXPRESSION,
       this.parseExpression
     )
-    console.log('#parseProg', {prog})
+    log({prog})
     if (prog.length == 0)
       return VALUE_FALSE
     if (prog.length == 1)
@@ -189,16 +190,17 @@ export class Parser { // recursive descent parser
   }
 
   private parseLambda():FunctionToken {
-    console.log('#parseLambda starting')
+    const log = makeLogger('Parser#parseLambda')
+    log('#parseLambda starting')
     const vars = this.delimited<VarName>(
       CHAR_PAREN_OPEN,
       CHAR_PAREN_CLOSE,
       CHAR_SEPARATOR_SEQUENCE,
       this.parseVarname
     )
-    console.log('#parseLambda', {vars})
+    log('#parseLambda', {vars})
     const body = this.parseExpression()
-    console.log('#parseLambda', {body})
+    log('#parseLambda', {body})
     return {
       type: 'lambda',
       vars,
@@ -207,7 +209,7 @@ export class Parser { // recursive descent parser
   }
 
   private parseVarname():VarName {
-    const log = (...msgs) => console.log('#parseVarname', ...msgs)
+    const log = makeLogger('Parser#parseVarname')
     log('starting', this.input)
     log('input', this.input)
     const name = this.input.next()
@@ -219,7 +221,6 @@ export class Parser { // recursive descent parser
   }
 
   private parseExpression() {
-    console.log('#parseExpression...')
     return this.maybeCall(() => this.maybeBinary(this.parseAtom(), 0))
   }
 
@@ -281,7 +282,7 @@ export class Parser { // recursive descent parser
   }
 
   private delimited<T>(startChar:string, endChar:string, separatorChar:string, parser:() => T):T[] {
-    const log = (...msgs) => console.log('#delimited', parser, ...msgs)
+    const log = makeLogger('Parser#delimited')
     log({startChar, separatorChar, endChar})
     const ast:T[] = []
     let first = true
@@ -309,7 +310,9 @@ export class Parser { // recursive descent parser
       log('push result of parser:', p)
       ast.push(p)
     }
+    log('skipping last end char', {endChar})
     this.skipPunctuation(endChar)
+    log('returning ast', {ast})
     return ast
   }
 }
