@@ -58,12 +58,12 @@ export class Parser { // recursive descent parser
     const prog:ASTNode[] = []
     while (!this.input.isAtEnd()) {
       prog.push(this.parseExpression())
-      log('prog:', prog)
       if (!this.input.isAtEnd()) {
-        log('tryna skip:', CHAR_SEPARATOR_EXPRESSION)
+        // log('tryna skip:', CHAR_SEPARATOR_EXPRESSION)
         this.skipPunctuation(CHAR_SEPARATOR_EXPRESSION)
       }
     }
+    log('prog:', prog)
     return {
       type: 'prog',
       prog,

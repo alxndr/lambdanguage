@@ -50,10 +50,14 @@ export class Evaluator {
       case 'var':
         return this.env.get(exp.value)
 
-      case 'assign':
+      case 'assign': {
         if (exp.left.type !== 'var')
           throw new Error(`Evaluator: Cannot assign to ${JSON.stringify(exp.left)}`)
-        return this.env.set(exp.left.value, this.evaluate(exp.right))
+        const lhsValue = exp.left.value
+        const rhsValue = this.evaluate(exp.right)
+        log({lhsValue, rhsValue})
+        return this.env.set(lhsValue, rhsValue)
+      }
 
       case 'binary':
         return Evaluator.applyOp(
@@ -69,8 +73,15 @@ export class Evaluator {
           return this.evaluate(exp.then)
         return exp.else ? this.evaluate(exp.else) : false
 
-      case 'prog':
-        return exp.prog.reduce((_, elem) => this.evaluate(elem), null)
+      case 'prog': {
+        // return exp.prog.reduce((_, elem) => this.evaluate(elem), null)
+        log('evaling prog...', exp.prog)
+        let val = false
+        exp.prog.forEach(p => {
+          val = this.evaluate(p)
+        })
+        return val
+      }
 
       case 'call':
         log('exp is a call...', exp.args)
@@ -82,9 +93,11 @@ export class Evaluator {
   }
 
   private makeLambda(exp:FunctionToken) {
+    const log = makeLogger('Evaluator#makeLambda')
     return (...args) => {
       const names = exp.vars
       const scope = this.env.extend()
+      log({names, scope})
       for (let i = 0; i < names.length; i++)
         scope.def(names[i], i < args.length ? args[i] : false)
       return new Evaluator(scope).evaluate(exp.body)
